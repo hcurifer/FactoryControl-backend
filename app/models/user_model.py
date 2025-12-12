@@ -1,17 +1,20 @@
 from sqlalchemy import Column, Integer, String, Boolean, Date
+from sqlalchemy.orm import Mapped, mapped_column
 from app.db.base import Base
 
 class User(Base):
     __tablename__ = "usuarios"
+    
+    id_usuario: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    numero_empresa: Mapped[str] = mapped_column(String, unique=True, index=True)
+    nombre: Mapped[str] = mapped_column(String, nullable=False)
+    apellidos: Mapped[str] = mapped_column(String, nullable=False)
+    correo: Mapped[str] = mapped_column(String, unique=True, index=True)
+    contrasena_hash: Mapped[str] = mapped_column(String, nullable=False)
+    rol: Mapped[str] = mapped_column(String, nullable=False)  # tecnico / mando
+    estado_disponible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    imagen: Mapped[str | None] = mapped_column(String, nullable=True)
+    fecha_alta: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    fecha_baja: Mapped[Date | None] = mapped_column(Date, nullable=True)
 
-    id_usuario = Column(Integer, primary_key=True, index=True)
-    numero_empresa = Column(String, unique=True, index=True)
-    nombre = Column(String, nullable=False)
-    apellidos = Column(String, nullable=False)
-    correo = Column(String, unique=True, index=True)
-    contrasena_hash = Column(String, nullable=False)
-    rol = Column(String, nullable=False)  # tecnico / mando
-    estado_disponible = Column(Boolean, default=True)
-    imagen = Column(String, nullable=True)
-    fecha_alta = Column(Date, nullable=True)
-    fecha_baja = Column(Date, nullable=True)
+
