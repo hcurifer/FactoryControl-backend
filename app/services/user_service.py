@@ -47,6 +47,7 @@ def create_user(db: Session, user: UserCreateSchema, hashed_password: str):
             detail="No se ha podido crear el usuario por un conflicto de datos (duplicados).",
         )
 
+# GET
 
 def get_user_by_id(db: Session, user_id: int):
     return db.query(User).filter(User.id_usuario == user_id).first()
@@ -55,9 +56,46 @@ def get_user_by_id(db: Session, user_id: int):
 def get_all_users(db: Session):
     return db.query(User).all()
 
+def get_usuarios_disponibles(db: Session):
+    return (
+        db.query(User)
+        .filter(
+            User.estado_disponible == True,
+            User.fecha_baja.is_(None),
+        )
+        .all()
+    )
+
+
+def get_usuarios_no_disponibles(db: Session):
+    return (
+        db.query(User)
+        .filter(
+            (User.estado_disponible == False)
+            | (User.fecha_baja.is_not(None))
+        )
+        .all()
+    )
+    
+def get_usuarios_activos(db: Session):
+    return (
+        db.query(User)
+        .filter(User.fecha_baja.is_(None))
+        .all()
+    )
+
+def get_usuarios_inactivos(db: Session):
+    return (
+        db.query(User)
+        .filter(User.fecha_baja.is_not(None))
+        .all()
+    )
+    
+    
+# UPDATE
 
 #Actualizar Estado Usuarios 
-def update_user_estado(
+def update_user_disponibilidad(
     db: Session,
     user_id: int,
     estado_data: UserEstadoUpdateSchema
@@ -71,6 +109,11 @@ def update_user_estado(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Usuario no encontrado"
         )
+    if usuario.fecha_baja is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Usuario dado de baja"
+        )
 
     # Actualizar solo el estado
     usuario.estado_disponible = estado_data.estado_disponible
@@ -80,4 +123,33 @@ def update_user_estado(
     db.refresh(usuario)
 
     # Devolver usuario actualizado
+    return usuario
+
+ # DELETE logico, mantengo historial y relaciones FK, controlo con fecha de baja
+ 
+def delete_user_logico(db: Session, user_id: int):
+    # Buscar usuario
+    usuario = db.query(User).filter(User.id_usuario == user_id).first()
+
+    # Si no existe error 404
+    if not usuario:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado"
+        )
+
+    # Si esta de baja, notificamos
+    if usuario.fecha_baja is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El usuario ya está dado de baja"
+        )
+
+    # Baja logica
+    usuario.estado_disponible = False
+    usuario.fecha_baja = date.today()
+
+    db.commit()
+    db.refresh(usuario)
+
     return usuario

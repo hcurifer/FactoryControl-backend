@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, Date
 from sqlalchemy.orm import Mapped, mapped_column
+from datetime import date
+from typing import Optional
 from app.db.base import Base
 
 class User(Base):
@@ -14,7 +16,7 @@ class User(Base):
     rol: Mapped[str] = mapped_column(String, nullable=False)  # tecnico / mando
     estado_disponible: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     imagen: Mapped[str | None] = mapped_column(String, nullable=True)
-    fecha_alta: Mapped[Date | None] = mapped_column(Date, nullable=True)
-    fecha_baja: Mapped[Date | None] = mapped_column(Date, nullable=True)
+    fecha_alta: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    fecha_baja: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
 
 
