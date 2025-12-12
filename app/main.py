@@ -10,6 +10,8 @@ from app.routers import health_router
 from app.db.session import engine
 from app.db.base import Base
 
+from app.routers import user_router
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Se ejecuta al iniciar la aplicación
@@ -40,10 +42,10 @@ def create_application() -> FastAPI:
     )
 
     # Routers
-    app.include_router(
-        health_router.router
-        )
-
+    app.include_router(health_router.router)       
+    app.include_router(user_router.router)  
+   
+   
     return app
 
 # instancia final de la APP
