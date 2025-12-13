@@ -4,9 +4,11 @@ from app.schemas.user_schema import UserCreateSchema, UserEstadoUpdateSchema
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from datetime import date
+from app.core.security import hash_password
 
 
-def create_user(db: Session, user: UserCreateSchema, hashed_password: str):
+
+def create_user(db: Session, user: UserCreateSchema):
     existing_user = (
         db.query(User)
         .filter(
@@ -21,6 +23,10 @@ def create_user(db: Session, user: UserCreateSchema, hashed_password: str):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Ya existe un usuario con ese número de empresa o correo.",
         )
+    
+    # Hashear contraseña antes de crear usuario    
+    hashed_password = hash_password(user.contrasena)
+        
     new_user = User(
         numero_empresa=user.numero_empresa,
         nombre=user.nombre,

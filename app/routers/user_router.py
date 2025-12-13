@@ -92,10 +92,8 @@ def cambiar_disponibilidad(
 
 @router.post("/", response_model=UserReadSchema)
 def crear_usuario(user: UserCreateSchema, db: Session = Depends(get_db)):
-    # un hash provisional antes de implementar bcrypt
-    hashed_password = "hashed_" + user.contrasena
-
-    return create_user(db, user, hashed_password)
+    
+    return create_user(db, user)
 
 
 # DELETE logico
