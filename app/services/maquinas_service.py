@@ -28,7 +28,7 @@ def create_maquina(db: Session, data: MaquinaCreateSchema) -> Maquina:
         nombre=data.nombre,
         codigo_maquina=data.codigo_maquina,
         ubicacion=data.ubicacion,
-        estado=data.estado.value if hasattr(data.estado, "value") else data.estado,
+        estado=data.estado.value,
         alarma_activa=data.alarma_activa,
         descripcion=data.descripcion,
         imagen=data.imagen,
@@ -75,11 +75,13 @@ def get_maquinas_con_alarma(db: Session) -> list[Maquina]:
     )
 
 
-def get_maquinas_por_estado(db: Session, estado: EstadoMaquinaEnum) -> list[Maquina]:
-    estado_val = estado.value if hasattr(estado, "value") else estado
+def get_maquinas_por_estado(db: Session,estado: EstadoMaquinaEnum) -> list[Maquina]:
     return (
         db.query(Maquina)
-        .filter(Maquina.estado == estado_val, Maquina.fecha_baja.is_(None))
+        .filter(
+            Maquina.estado == estado.value,
+            Maquina.fecha_baja.is_(None)
+        )
         .all()
     )
 
@@ -116,7 +118,7 @@ def update_maquina(db: Session, maquina_id: int, data: MaquinaUpdateSchema) -> M
     if data.imagen is not None:
         maquina.imagen = data.imagen
     if data.estado is not None:
-        maquina.estado = data.estado.value if hasattr(data.estado, "value") else data.estado
+        maquina.estado = data.estado.value
     if data.alarma_activa is not None:
         maquina.alarma_activa = data.alarma_activa
 
@@ -138,7 +140,7 @@ def update_maquina_estado(db: Session, maquina_id: int, data: MaquinaEstadoUpdat
             detail="Máquina dada de baja"
         )
 
-    maquina.estado = data.estado.value if hasattr(data.estado, "value") else data.estado
+    maquina.estado = data.estado.value
     db.commit()
     db.refresh(maquina)
     return maquina
@@ -163,7 +165,7 @@ def update_maquina_alarma(db: Session, maquina_id: int, data: MaquinaAlarmaUpdat
     return maquina
 
 
-# DELETE LÓGICO
+# DELETE LÓGICO y FISICO de BBDD
 
 def delete_maquina_logico(db: Session, maquina_id: int) -> Maquina:
     maquina = get_maquina_by_id(db, maquina_id)
