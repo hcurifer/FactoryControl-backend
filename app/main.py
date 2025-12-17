@@ -14,6 +14,9 @@ from app.routers import user_router
 from app.routers import auth_router
 from app.routers import maquinas_router
 from app.routers.averias_urgentes_router import router as averias_urgentes_router
+from app.routers import tareas_catalogo_gamas_router
+from app.routers import tareas_preventivo_router
+from app.routers import gamas_preventivo_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -50,6 +53,9 @@ def create_application() -> FastAPI:
     app.include_router(auth_router.router)
     app.include_router(maquinas_router.router)
     app.include_router(averias_urgentes_router)
+    app.include_router(tareas_preventivo_router.router)  
+    app.include_router(gamas_preventivo_router.router)  
+    app.include_router(tareas_catalogo_gamas_router.router)  
    
    
     return app
