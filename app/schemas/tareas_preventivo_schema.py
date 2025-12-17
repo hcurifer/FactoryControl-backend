@@ -26,6 +26,15 @@ class TareaPreventivoCreateSchema(TareaPreventivoBaseSchema):
     fecha_asignada: Optional[date] = Field(default_factory=date.today)
     observaciones: Optional[str] = None
 
+# GENERADOR
+ 
+class GenerarTareasPreventivoSchema(BaseModel):
+    id_gama: int
+    id_maquina: int
+    id_usuario: int
+    fecha_asignada: date
+
+    model_config = ConfigDict(from_attributes=True)
 
 # UPDATE GENERAL
 class TareaPreventivoUpdateSchema(BaseModel):
