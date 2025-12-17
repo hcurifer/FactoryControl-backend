@@ -6,12 +6,14 @@ from app.models.tareas_preventivo_model import TareaPreventivo
 from app.models.maquinas_model import Maquina
 from app.models.user_model import User
 from app.models.gamas_preventivo_model import GamaPreventivo
+from app.models.tareas_catalogo_gamas_model import TareaCatalogoGama
 
 from app.schemas.tareas_preventivo_schema import (
     TareaPreventivoCreateSchema,
     TareaPreventivoUpdateSchema,
     TareaPreventivoEstadoUpdateSchema,
-    EstadoTareaPreventivoEnum
+    EstadoTareaPreventivoEnum,
+    GenerarTareasPreventivoSchema
 )
 
 
@@ -100,3 +102,60 @@ def update_estado_tarea_preventivo(
     db.commit()
     db.refresh(tarea)
     return tarea
+
+# GENERADOR 
+
+def generar_tareas_desde_gama(db: Session,data: GenerarTareasPreventivoSchema) -> list[TareaPreventivo]:
+
+    gama = db.query(GamaPreventivo).filter(GamaPreventivo.id_gama == data.id_gama).first()
+    if not gama:
+        raise HTTPException(status_code=404, detail="Gama no encontrada")
+
+    if not gama.activa:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="La gama está desactivada")
+
+    maquina = db.query(Maquina).filter(Maquina.id_maquina == data.id_maquina).first()
+    if not maquina or maquina.fecha_baja is not None:
+        raise HTTPException(status_code=404, detail="Máquina no válida")
+
+    usuario = db.query(User).filter(User.id_usuario == data.id_usuario).first()
+    if not usuario or usuario.fecha_baja is not None:
+        raise HTTPException(status_code=404, detail="Usuario no válido")
+
+    tareas_catalogo = (
+        db.query(TareaCatalogoGama)
+        .filter(TareaCatalogoGama.id_gama == data.id_gama)
+        .order_by(TareaCatalogoGama.orden)
+        .all()
+    )
+
+    if not tareas_catalogo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La gama no tiene tareas de catálogo asociadas"
+        )
+
+    tareas_creadas = []
+
+    for tarea in tareas_catalogo:
+        nueva_tarea = TareaPreventivo(
+            id_gama=data.id_gama,
+            id_maquina=data.id_maquina,
+            id_usuario=data.id_usuario,
+            id_tarea_catalogo_gamas=tarea.id_tarea_catalogo_gamas,
+            estado=EstadoTareaPreventivoEnum.pendiente.value,
+            fecha_asignada=data.fecha_asignada,
+            fecha_completado=None,
+            observaciones=None,
+            duracion_horas=tarea.duracion_horas
+        )
+
+        db.add(nueva_tarea)
+        tareas_creadas.append(nueva_tarea)
+
+    db.commit()
+
+    for t in tareas_creadas:
+        db.refresh(t)
+
+    return tareas_creadas

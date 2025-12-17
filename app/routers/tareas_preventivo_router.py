@@ -6,7 +6,8 @@ from app.schemas.tareas_preventivo_schema import (
     TareaPreventivoCreateSchema,
     TareaPreventivoReadSchema,
     TareaPreventivoUpdateSchema,
-    TareaPreventivoEstadoUpdateSchema
+    TareaPreventivoEstadoUpdateSchema,
+    GenerarTareasPreventivoSchema
 )
 from app.services.tareas_preventivo_service import (
     create_tarea_preventivo,
@@ -14,7 +15,8 @@ from app.services.tareas_preventivo_service import (
     get_tareas_por_usuario,
     get_tareas_por_maquina,
     update_tarea_preventivo,
-    update_estado_tarea_preventivo
+    update_estado_tarea_preventivo,
+    generar_tareas_desde_gama
 )
 
 router = APIRouter(prefix="/tareas-preventivo",tags=["Tareas Preventivo"])
@@ -63,3 +65,13 @@ def cambiar_estado(
     db: Session = Depends(get_db)
 ):
     return update_estado_tarea_preventivo(db, tarea_id, data)
+
+
+# GENERADOR
+
+@router.post("/generar",response_model=list[TareaPreventivoReadSchema],summary="Generar tareas preventivas a partir de una gama")
+def generar_tareas(
+    data: GenerarTareasPreventivoSchema,
+    db: Session = Depends(get_db)
+):
+    return generar_tareas_desde_gama(db, data)
