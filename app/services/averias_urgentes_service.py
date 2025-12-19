@@ -28,10 +28,7 @@ from app.services.user_service import get_user_by_id
 
 # CREATE
 
-def create_averia_urgente(
-    db: Session,
-    data: AveriaUrgenteCreateSchema
-) -> AveriaUrgente:
+def create_averia_urgente(db: Session,data: AveriaUrgenteCreateSchema) -> AveriaUrgente:
 
     # Validar máquina
     maquina = get_maquina_by_id(db, data.id_maquina)
@@ -93,10 +90,7 @@ def get_all_averias(db: Session) -> list[AveriaUrgente]:
     return db.query(AveriaUrgente).all()
 
 
-def get_averias_por_estado(
-    db: Session,
-    estado: EstadoAveriaUrgenteEnum
-) -> list[AveriaUrgente]:
+def get_averias_por_estado(db: Session,estado: EstadoAveriaUrgenteEnum) -> list[AveriaUrgente]:
     return (
         db.query(AveriaUrgente)
         .filter(AveriaUrgente.estado == estado.value)
@@ -112,10 +106,7 @@ def get_averias_por_maquina(db: Session, id_maquina: int) -> list[AveriaUrgente]
     )
 
 
-def get_averias_por_usuario_asignado(
-    db: Session,
-    id_usuario: int
-) -> list[AveriaUrgente]:
+def get_averias_por_usuario_asignado(db: Session,id_usuario: int) -> list[AveriaUrgente]:
     return (
         db.query(AveriaUrgente)
         .filter(AveriaUrgente.id_usuario_asignado == id_usuario)
@@ -125,11 +116,7 @@ def get_averias_por_usuario_asignado(
 
  # UPDATES 
  
-def update_averia_urgente(
-    db: Session,
-    averia_id: int,
-    data: AveriaUrgenteUpdateSchema
-) -> AveriaUrgente:
+def update_averia_urgente(db: Session,averia_id: int,data: AveriaUrgenteUpdateSchema) -> AveriaUrgente:
 
     averia = get_averia_by_id(db, averia_id)
     if not averia:
@@ -151,11 +138,7 @@ def update_averia_urgente(
     db.refresh(averia)
     return averia
 
-def update_estado_averia_urgente(
-    db: Session,
-    averia_id: int,
-    data: AveriaUrgenteEstadoUpdateSchema
-) -> AveriaUrgente:
+def update_estado_averia_urgente(db: Session,averia_id: int,data: AveriaUrgenteEstadoUpdateSchema) -> AveriaUrgente:
 
     averia = get_averia_by_id(db, averia_id)
     if not averia:
