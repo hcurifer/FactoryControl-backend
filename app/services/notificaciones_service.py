@@ -12,6 +12,7 @@ from app.schemas.notificaciones_schema import (
 from app.services.maquinas_service import get_maquina_by_id
 from app.services.user_service import get_user_by_id
 from app.services.averias_urgentes_service import get_averia_by_id
+from app.services.email_service import enviar_correo
 
 
 # CREATE
@@ -72,6 +73,26 @@ def create_notificacion(db: Session,data: NotificacionCreateSchema) -> Notificac
     db.add(notificacion)
     db.commit()
     db.refresh(notificacion)
+    
+    # EMAIL AUTOMÁTICO
+    asunto = data.asunto or f"Notificación FactoryControl - {notificacion.tipo}"
+
+    cuerpo = (
+        "Se ha generado una nueva notificación en FactoryControl.\n\n"
+        f"Tipo: {notificacion.tipo}\n"
+        f"Máquina: {maquina.nombre} (ID {maquina.id_maquina})\n"
+        f"Avería asociada: {data.id_averia or 'No aplica'}\n\n"
+        f"Usuario que origina la notificación:\n"
+        f"- ID usuario: {usuario_origen.id_usuario if usuario_origen else 'No informado'}\n"
+        f"- Nombre: {usuario_origen.nombre if usuario_origen else '-'} "
+        f"{usuario_origen.apellidos if usuario_origen else ''}\n\n"
+        "Contenido:\n"
+        f"{notificacion.contenido_resumen}\n\n"
+        f"ID notificación: {notificacion.id_notificacion}\n"
+        f"Fecha: {notificacion.fecha_envio}\n"
+    )
+
+    enviar_correo(asunto=asunto, cuerpo=cuerpo)
 
     return notificacion
 
