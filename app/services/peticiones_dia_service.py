@@ -6,6 +6,9 @@ from fastapi import HTTPException, status
 from app.models.peticiones_dia_model import PeticionDia
 from app.models.user_model import User
 
+from app.core.config import settings
+from app.services.email_service import enviar_correo
+
 from app.schemas.peticiones_dia_schema import (
     PeticionDiaCreateSchema,
     PeticionDiaUpdateSchema,
@@ -46,6 +49,25 @@ def create_peticion_dia(db: Session,data: PeticionDiaCreateSchema) -> PeticionDi
     db.add(peticion)
     db.commit()
     db.refresh(peticion)
+    
+     # EMAIL AUTOMÁTICO
+    asunto = "Nueva petición de día registrada"
+
+    cuerpo = (
+        "Se ha registrado una nueva petición de día en FactoryControl.\n\n"
+        f"Empleado solicitante:\n"
+        f"- Nombre: {usuario.nombre} {usuario.apellidos}\n"
+        f"- Nº empresa: {usuario.numero_empresa}\n"
+        f"- ID usuario: {usuario.id_usuario}\n\n"
+        f"Tipo de petición:\n"
+        f"- {peticion.tipo_peticion}\n\n"
+        f"Comentario:\n"
+        f"- {peticion.comentario or 'Sin comentario'}\n\n"
+        f"ID petición: {peticion.id_peticion}\n"
+        f"Estado actual: {peticion.estado}\n"
+    )
+
+    enviar_correo(asunto=asunto, cuerpo=cuerpo)
 
     return peticion
 

@@ -40,4 +40,14 @@ class Settings(BaseSettings):
             raise ValueError("JWT_SECRET_KEY no está definido en el .env")
         return self
 
+    # EMAIL / SMTP (Gmail)
+    EMAIL_ENABLED: bool = False
+    EMAIL_DEFAULT_TO: str = ""
+
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_FROM: str = ""
+
 settings = Settings()

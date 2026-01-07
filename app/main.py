@@ -51,19 +51,18 @@ def create_application() -> FastAPI:
     )
 
     # Routers
-    app.include_router(health_router.router)       
-    app.include_router(user_router.router)  
+    app.include_router(health_router.router)
+    app.include_router(user_router.router)
     app.include_router(auth_router.router)
     app.include_router(maquinas_router.router)
     app.include_router(averias_urgentes_router.router)
-    app.include_router(tareas_preventivo_router.router)  
-    app.include_router(gamas_preventivo_router.router)  
-    app.include_router(tareas_catalogo_gamas_router.router)  
+    app.include_router(tareas_preventivo_router.router)
+    app.include_router(gamas_preventivo_router.router)
+    app.include_router(tareas_catalogo_gamas_router.router)
     app.include_router(fichajes_router.router)
     app.include_router(notificaciones_router.router)
     app.include_router(peticiones_dia_router.router)
-   
-   
+
     return app
 
 # instancia final de la APP
