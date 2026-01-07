@@ -32,6 +32,7 @@ def create_notificacion(db: Session,data: NotificacionCreateSchema) -> Notificac
         )
 
     # Validar avería si viene informada
+    averia = None
     if data.id_averia is not None:
         averia = get_averia_by_id(db, data.id_averia)
         if not averia:
@@ -41,13 +42,13 @@ def create_notificacion(db: Session,data: NotificacionCreateSchema) -> Notificac
             )
 
     # Validar usuario origen si viene
-    if data.id_usuario_origen is not None:
-        usuario_origen = get_user_by_id(db, data.id_usuario_origen)
-        if not usuario_origen:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Usuario origen no encontrado"
-            )
+
+    usuario_origen = get_user_by_id(db, data.id_usuario_origen)
+    if not usuario_origen:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario origen no encontrado"
+        )
 
     # Validar usuario destino si viene
     if data.id_usuario_destino is not None:
@@ -73,26 +74,41 @@ def create_notificacion(db: Session,data: NotificacionCreateSchema) -> Notificac
     db.add(notificacion)
     db.commit()
     db.refresh(notificacion)
-    
-    # EMAIL AUTOMÁTICO
-    asunto = data.asunto or f"Notificación FactoryControl - {notificacion.tipo}"
 
-    cuerpo = (
-        "Se ha generado una nueva notificación en FactoryControl.\n\n"
-        f"Tipo: {notificacion.tipo}\n"
-        f"Máquina: {maquina.nombre} (ID {maquina.id_maquina})\n"
-        f"Avería asociada: {data.id_averia or 'No aplica'}\n\n"
-        f"Usuario que origina la notificación:\n"
-        f"- ID usuario: {usuario_origen.id_usuario if usuario_origen else 'No informado'}\n"
-        f"- Nombre: {usuario_origen.nombre if usuario_origen else '-'} "
-        f"{usuario_origen.apellidos if usuario_origen else ''}\n\n"
-        "Contenido:\n"
-        f"{notificacion.contenido_resumen}\n\n"
-        f"ID notificación: {notificacion.id_notificacion}\n"
-        f"Fecha: {notificacion.fecha_envio}\n"
+    # EMAIL AUTOMÁTICO
+    asunto_email = (
+        f"Avería NO realizada | ID {averia.id_averia} - {averia.descripcion}"
+        if averia
+        else "Avería NO realizada"
     )
 
-    enviar_correo(asunto=asunto, cuerpo=cuerpo)
+    cuerpo = (
+        "NOTIFICACIÓN AUTOMÁTICA - AVERÍA NO REALIZADA\n\n"
+        "Se ha generado una nueva notificación en FactoryControl.\n\n"
+        "DATOS DE LA AVERÍA:\n"
+        f"- ID avería: {averia.id_averia if averia else 'No disponible'}\n"
+        f"- Descripción: {averia.descripcion if averia else '-'}\n"
+        f"- Prioridad: {averia.prioridad if averia else '-'}\n"
+        f"- Estado actual: {averia.estado if averia else '-'}\n\n"
+
+        "MÁQUINA AFECTADA:\n"
+        f"- Nombre: {maquina.nombre}\n"
+        f"- ID máquina: {maquina.id_maquina}\n\n"
+
+        "USUARIO QUE REPORTA LA INCIDENCIA:\n"
+        f"- Nombre: {usuario_origen.nombre} {usuario_origen.apellidos}\n"
+        f"- Nº empresa: {usuario_origen.numero_empresa}\n"
+        f"- ID usuario: {usuario_origen.id_usuario}\n\n"
+
+        "MOTIVO DE NO REALIZACIÓN:\n"
+        f"{data.contenido_resumen}\n\n"
+
+        "INFORMACIÓN DEL SISTEMA:\n"
+        f"- ID notificación: {notificacion.id_notificacion}\n"
+        f"- Fecha de envío: {notificacion.fecha_envio}\n"
+    )
+
+    enviar_correo(asunto=asunto_email, cuerpo=cuerpo)
 
     return notificacion
 
