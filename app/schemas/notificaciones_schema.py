@@ -32,7 +32,7 @@ class NotificacionCreateSchema(NotificacionBaseSchema):
     id_averia: Optional[int] = None
     id_tarea: Optional[int] = None
     id_maquina: int
-    id_usuario_origen: Optional[int] = None
+    id_usuario_origen: int
     id_usuario_destino: Optional[int] = None
 
 

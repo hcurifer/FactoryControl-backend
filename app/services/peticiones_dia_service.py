@@ -54,17 +54,19 @@ def create_peticion_dia(db: Session,data: PeticionDiaCreateSchema) -> PeticionDi
     asunto = "Nueva petición de día registrada"
 
     cuerpo = (
+        "NOTIFICACIÓN AUTOMÁTICA - PETICIÓN DE DÍA\n\n"
         "Se ha registrado una nueva petición de día en FactoryControl.\n\n"
         f"Empleado solicitante:\n"
         f"- Nombre: {usuario.nombre} {usuario.apellidos}\n"
         f"- Nº empresa: {usuario.numero_empresa}\n"
         f"- ID usuario: {usuario.id_usuario}\n\n"
-        f"Tipo de petición:\n"
+        f"Datos de la petición:\n"
         f"- {peticion.tipo_peticion}\n\n"
-        f"Comentario:\n"
-        f"- {peticion.comentario or 'Sin comentario'}\n\n"
+        f"- Comentario: {peticion.comentario or 'Sin comentario'}\n\n"
+        f"Estado actual:\n"
+        f"Estado actual: {peticion.estado}\n\n"
+        f"Información del sistema:\n"
         f"ID petición: {peticion.id_peticion}\n"
-        f"Estado actual: {peticion.estado}\n"
     )
 
     enviar_correo(asunto=asunto, cuerpo=cuerpo)
