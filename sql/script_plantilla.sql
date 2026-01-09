@@ -72,32 +72,32 @@ INSERT INTO maquinas (
 ('Taladro Industrial', 'MAQ-TAL-001', 'Linea 1 - Zona A',
  'disponible', false,
  'Taladro industrial para mecanizado de piezas metálicas',
- 'Taladro Industrial.png'),
+ 'TaladroIndustrial.png'),
 
 ('Prensa Hidraulica', 'MAQ-PRE-002', 'Linea 1 - Zona B',
  'disponible', false,
  'Prensa hidráulica de alta presión',
- 'Prensa Hidraulica.png'),
+ 'PrensaHidraulica.png'),
 
 ('Cinta Transportadora', 'MAQ-CIN-003', 'Linea 2 - Zona A',
  'disponible', false,
  'Cinta transportadora de piezas entre estaciones',
- 'Cinta Transportadora.png'),
+ 'CintaTransportadora.png'),
 
 ('Robot Soldadura', 'MAQ-ROB-004', 'Linea 2 - Zona C',
  'disponible', false,
  'Robot automático de soldadura',
- 'Robot Soldadura.png'),
+ 'RobotSoldadura.png'),
 
 ('Compresor Aire', 'MAQ-COM-005', 'Sala Tecnica',
  'disponible', false,
  'Compresor principal de aire industrial',
- 'Compresor Aire.png'),
+ 'CompresorAire.png'),
 
 ('Torno CNC', 'MAQ-TOR-006', 'Linea 3 - Zona A',
  'disponible', false,
  'Torno CNC de precisión',
- 'Torno CNC.png'),
+ 'TornoCNC.png'),
 
 ('Fresadora', 'MAQ-FRE-007', 'Linea 3 - Zona B',
  'disponible', false,
@@ -107,17 +107,17 @@ INSERT INTO maquinas (
 ('Horno Industrial', 'MAQ-HOR-008', 'Linea 4 - Zona A',
  'disponible', false,
  'Horno industrial de tratamiento térmico',
- 'Horno Industrial.png'),
+ 'HornoIndustrial.png'),
 
 ('Elevador Hidraulico', 'MAQ-ELE-009', 'Zona Mantenimiento',
  'disponible', false,
  'Elevador hidráulico para mantenimiento',
- 'Elevador Hidraulico.png'),
+ 'ElevadorHidraulico.png'),
 
 ('Pulidora Automatizada', 'MAQ-PUL-010', 'Linea 4 - Zona B',
  'disponible', false,
  'Pulidora automática de acabado',
- 'Pulidora Automatizada.png');
+ 'PulidoraAutomatizada.png');
 
  -- AVERIAS table averias_urgentes
 
